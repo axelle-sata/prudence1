@@ -10,98 +10,134 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Formulaire avec Modifier/Supprimer</title>
+  <title>Formulaire Ajout</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
+      background: #f2f2f2;
+      padding: 30px;
     }
 
-    form {
-      margin-bottom: 20px;
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     input {
-      padding: 8px;
-      margin: 5px;
-      border-radius: 4px;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
       border: 1px solid #ccc;
     }
 
     button {
-      padding: 8px 12px;
-      margin: 5px;
+      padding: 10px 15px;
+      margin: 5px 5px 0 0;
       border: none;
-      border-radius: 4px;
+      border-radius: 5px;
       cursor: pointer;
-    }
-
-    .modifier {
-      background-color: #3498db;
       color: white;
     }
 
-    .supprimer {
-      background-color: #e74c3c;
-      color: white;
-    }
+    .valider { background-color: #2ecc71; }
+    .modifier { background-color: #3498db; }
+    .supprimer { background-color: #e74c3c; }
 
-    .valider {
-      background-color: #2ecc71;
-      color: white;
-    }
-
-    .resultat {
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 4px;
+    .fiche {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
 
-  <h2>Formulaire</h2>
+<div class="container">
+  <h2>Ajouter un contact</h2>
+
   <form id="formulaire">
     <input type="text" id="nom" placeholder="Nom" required>
     <input type="email" id="email" placeholder="Email" required>
     <button type="submit" class="valider">Valider</button>
   </form>
 
-  <div id="resultat" class="resultat" style="display: none;">
-    <p><strong>Nom :</strong> <span id="afficheNom"></span></p>
-    <p><strong>Email :</strong> <span id="afficheEmail"></span></p>
-    <button class="modifier" onclick="modifier()">Modifier</button>
-    <button class="supprimer" onclick="supprimer()">Supprimer</button>
-  </div>
+  <h3>Liste des fiches</h3>
+  <div id="liste"></div>
+</div>
 
-  <script>
-    const form = document.getElementById('formulaire');
-    const nomInput = document.getElementById('nom');
-    const emailInput = document.getElementById('email');
-    const resultatDiv = document.getElementById('resultat');
-    const afficheNom = document.getElementById('afficheNom');
-    const afficheEmail = document.getElementById('afficheEmail');
+<script>
+  const formulaire = document.getElementById('formulaire');
+  const nomInput = document.getElementById('nom');
+  const emailInput = document.getElementById('email');
+  const liste = document.getElementById('liste');
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      afficheNom.textContent = nomInput.value;
-      afficheEmail.textContent = emailInput.value;
-      resultatDiv.style.display = 'block';
-      form.reset();
-    });
+  formulaire.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-    function modifier() {
-      nomInput.value = afficheNom.textContent;
-      emailInput.value = afficheEmail.textContent;
-      resultatDiv.style.display = 'none';
-    }
+    const nom = nomInput.value.trim();
+    const email = emailInput.value.trim();
 
-    function supprimer() {
-      afficheNom.textContent = '';
-      afficheEmail.textContent = '';
-      resultatDiv.style.display = 'none';
-    }
-  </script>
+    if (!nom || !email) return;
+
+    ajouterFiche(nom, email);
+
+    formulaire.reset(); // vide le formulaire
+  });
+
+  function ajouterFiche(nom, email) {
+    const div = document.createElement('div');
+    div.className = 'fiche';
+
+    const nomSpan = document.createElement('span');
+    nomSpan.textContent = nom;
+    nomSpan.className = 'nom';
+
+    const emailSpan = document.createElement('span');
+    emailSpan.textContent = email;
+    emailSpan.className = 'email';
+
+    const pNom = document.createElement('p');
+    pNom.innerHTML = `<strong>Nom :</strong> `;
+    pNom.appendChild(nomSpan);
+
+    const pEmail = document.createElement('p');
+    pEmail.innerHTML = `<strong>Email :</strong> `;
+    pEmail.appendChild(emailSpan);
+
+    const btnModifier = document.createElement('button');
+    btnModifier.textContent = 'Modifier';
+    btnModifier.className = 'modifier';
+    btnModifier.onclick = function () {
+      // Transformer les spans en champs de formulaire pour édition
+      const newNom = prompt('Modifier le nom :', nomSpan.textContent);
+      const newEmail = prompt('Modifier l’email :', emailSpan.textContent);
+
+      if (newNom) nomSpan.textContent = newNom;
+      if (newEmail) emailSpan.textContent = newEmail;
+    };
+
+    const btnSupprimer = document.createElement('button');
+    btnSupprimer.textContent = 'Supprimer';
+    btnSupprimer.className = 'supprimer';
+    btnSupprimer.onclick = function () {
+      div.remove();
+    };
+
+    div.appendChild(pNom);
+    div.appendChild(pEmail);
+    div.appendChild(btnModifier);
+    div.appendChild(btnSupprimer);
+
+    liste.appendChild(div);
+  }
+</script>
 
 </body>
 </html>
